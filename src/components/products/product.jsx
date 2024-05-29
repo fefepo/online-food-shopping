@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import styles from "./product.module.css";
 
-export const Product = ({product, convertPrice}) => {
+export const Product = ({product, convertPrice,cart,setCart}) => {
   return (
     <div className={styles.product}>
       <Link to={`/product/${product.id}`}>

@@ -5,3 +5,4 @@ const Home = ({products, setProducts, convertPrice}) => {
 };
 
 export default Home;
+  
