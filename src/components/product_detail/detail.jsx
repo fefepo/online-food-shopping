@@ -36,7 +36,7 @@ const setQuantity = (id,quantity) => {
     provider: product.provider,
     quantity: quantity
   }
-setCart([...cart,slice(0,idx), cartItem, ...cart.slice(idx + 1 )])
+setCart([...cart.slice(0,idx), cartItem, ...cart.slice(idx + 1 )])
 }
 
 const handleCart = () => {
