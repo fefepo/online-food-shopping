@@ -1,7 +1,7 @@
 import { Cart } from "../components/cart/cart";
 
-const Basket = ({convertPrice, cart, setCart}) => {
-  return <Cart convertPrice={convertPrice} cart = {cart} setCart = {setCart}/>;
+const Basket = ({ cart, setCart, convertPrice }) => {
+  return <Cart cart={cart} setCart={setCart} convertPrice={convertPrice} />;
 };
 
 export default Basket;

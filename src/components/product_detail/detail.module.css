@@ -65,7 +65,7 @@
 }
 
 .delivery {
-  width: 150px;
+  width: 135px;
   height: 20px;
   margin-bottom: 20px;
 }
@@ -105,12 +105,11 @@
 .amount .count {
   position: absolute;
   width: 56px;
+  height: 49px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   border: 1px solid #c4c4c4;
-  border-top:none;
-  border-bottom:none;
 }
 
 .amount .count span {
@@ -223,6 +222,10 @@
     margin: 0;
     padding: 20px;
     padding-bottom: 0;
+  }
+
+  .amount .count {
+    height: 50px;
   }
 
   .sum .total_price {

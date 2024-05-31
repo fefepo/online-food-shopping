@@ -1,60 +1,59 @@
-import { useParams, useSearchParams } from "react-router-dom";
 import styles from "./detail.module.css";
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { getProducts } from "../../service/fetcher";
 
-export const Detail = ({convertPrice, cart, setCart}) => {
-  const {id} = useParams()
-  const [product, setProduct] = useState({})
-  const [count, setCount] = useState(1)
+export const Detail = ({ convertPrice, cart, setCart }) => {
+  const { id } = useParams();
+  const [product, setProduct] = useState({});
+  const [count, setCount] = useState(1);
 
+  // 상세페이지에서 물건 수량 조절
   const handleQuantity = (type) => {
-    if(type === "plus"){
-      setCount(count + 1)
-    } else{
-      if(count === 1) return;
-      setCount(count - 1)
+    if (type === "plus") {
+      setCount(count + 1);
+    } else {
+      if (count === 1) return;
+      setCount(count - 1);
     }
-  }
+  };
 
-  useEffect(()=>{
-    getProducts().then((data)=>{
-      setProduct(data.data.products.find((product) => product.id === parseInt(id)))
-    })
-  }, [id])
+  // 장바구니에 중복된 물건을 담을 때 사용
+  const setQuantity = (id, quantity) => {
+    const found = cart.filter((el) => el.id === id)[0];
+    const idx = cart.indexOf(found);
+    const cartItem = {
+      id: product.id,
+      image: product.image,
+      name: product.name,
+      quantity: quantity,
+      price: product.price,
+      provider: product.provider,
+    };
+    setCart([...cart.slice(0, idx), cartItem, ...cart.slice(idx + 1)]);
+  };
 
-  // 장바구니 물건 중복된 물건
-const setQuantity = (id,quantity) => {
+  const handleCart = () => {
+    const cartItem = {
+      id: product.id,
+      image: product.image,
+      name: product.name,
+      quantity: count,
+      price: product.price,
+      provider: product.provider,
+    };
+    const found = cart.find((el) => el.id === cartItem.id);
+    if (found) setQuantity(cartItem.id, found.quantity + count);
+    else setCart([...cart, cartItem]);
+  };
 
-  const found = cart.filter((el) => el.id === id) [0]
-  const idx = cart.indexOf(found)
-  const cartItem = {
-    id: product.id,
-    image: product.image,
-    name: product.name,
-    price: product.price, 
-    provider: product.provider,
-    quantity: quantity
-  }
-setCart([...cart.slice(0,idx), cartItem, ...cart.slice(idx + 1 )])
-}
-
-const handleCart = () => {
-  const cartItem = {
-    id: product.id,
-    image: product.image,
-    name: product.name,
-    price: product.price, 
-    provider: product.provider,
-    quantity: count
-  }
-
-  const found = cart.find((el) => el.id === cartItem.id)
-
-  if (found) setQuantity(cartItem.id,  found.quantity + count)
-  else  setCart([...cart,cartItem])
-  
-}
+  useEffect(() => {
+    getProducts().then((data) => {
+      setProduct(
+        data.data.products.find((product) => product.id === parseInt(id))
+      );
+    });
+  }, [id, product.price]);
 
   return (
     product && (
@@ -86,7 +85,7 @@ const handleCart = () => {
                 className={styles.minus}
                 src="/images/icon-minus-line.svg"
                 alt="minus"
-                onClick={()=>handleQuantity("minus")}
+                onClick={() => handleQuantity("minus")}
               />
 
               <div className={styles.count}>
@@ -97,7 +96,7 @@ const handleCart = () => {
                 className={styles.plus}
                 src="/images/icon-plus-line.svg"
                 alt="plus"
-                onClick={()=>handleQuantity("plus")}
+                onClick={() => handleQuantity("plus")}
               />
             </div>
 
@@ -121,8 +120,14 @@ const handleCart = () => {
 
             <div className={styles.btn}>
               <button className={styles.btn_buy}>바로 구매</button>
-              <button className={styles.btn_cart} onClick ={() => handleCart()}>
-                장바구니</button>
+              <button
+                className={styles.btn_cart}
+                onClick={() => {
+                  handleCart();
+                }}
+              >
+                장바구니
+              </button>
             </div>
           </section>
         </main>

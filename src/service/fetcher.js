@@ -1,8 +1,8 @@
 import axios from "axios";
 
-const url = "/data/products.json"
+const apiUrl = "/data/products.json";
 
-export const getProducts = () =>{
-    const res = axios(url)
-    return res
-}
+export const getProducts = () => {
+  const res = axios(apiUrl);
+  return res;
+};
