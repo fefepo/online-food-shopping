@@ -1,3 +1,5 @@
+// src/App.js
+
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { useState } from "react";
@@ -5,10 +7,16 @@ import { TopNavigationBar } from "./components/header/topNavigationBar/topNaviga
 import Home from "./pages/home";
 import Product from "./pages/product";
 import Basket from "./pages/basket";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import MyPage from "./pages/MyPage";
+//import Orders from "./pages/Orders";
+//import Withdrawal from "./pages/Withdrawal";
 
 function App() {
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
+  const [auth, setAuth] = useState(false);
 
   const convertPrice = (price) => {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -16,7 +24,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <TopNavigationBar cart={cart} />
+      <TopNavigationBar cart={cart} isAuthenticated={auth} />
       <Routes>
         <Route
           path="/"
@@ -44,6 +52,10 @@ function App() {
             <Basket cart={cart} setCart={setCart} convertPrice={convertPrice} />
           }
         />
+        <Route path="/login" element={<Login setAuth={setAuth} />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/mypage" element={<MyPage />} />
+        
       </Routes>
     </BrowserRouter>
   );

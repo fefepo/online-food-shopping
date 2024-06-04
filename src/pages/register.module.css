@@ -1,0 +1,57 @@
+/* src/pages/register.module.css */
+
+.registerContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f5f5f5;
+  }
+  
+  .registerForm {
+    width: 300px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .registerForm h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    text-align: center;
+  }
+  
+  .formGroup {
+    margin-bottom: 15px;
+  }
+  
+  .formGroup label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+  }
+  
+  .formGroup input {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
