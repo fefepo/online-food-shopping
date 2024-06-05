@@ -1,9 +1,14 @@
-// src/components/header/topNavigationBar/topNavigationBar.js
-
 import styles from "./topNavigationBar.module.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-export const TopNavigationBar = ({ cart, isAuthenticated }) => {
+export const TopNavigationBar = ({ cart, isAuthenticated, logout }) => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout(); // Call the passed logout function
+    navigate("/login");
+  };
+
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
@@ -33,12 +38,18 @@ export const TopNavigationBar = ({ cart, isAuthenticated }) => {
           </div>
         </Link>
         {isAuthenticated ? (
-          <Link to="/mypage"> {/* 마이페이지로 연결 */}
-            <div className={styles.mypage}>
-              <img src="/images/icon-user.svg" alt="user" />
-              <span>마이페이지</span>
-            </div>
-          </Link>
+          <>
+            <Link to="/mypage">
+              <div className={styles.mypage}>
+                <img src="/images/icon-user.svg" alt="user" />
+                <span>마이페이지</span>
+              </div>
+            </Link>
+            <button onClick={handleLogout} className={styles.logoutButton}>
+              <img src="/images/icon-logout.svg" alt="logout" className={styles.logoutIcon} />
+              <span>로그아웃</span>
+            </button>
+          </>
         ) : (
           <Link to="/login">
             <div className={styles.mypage}>
