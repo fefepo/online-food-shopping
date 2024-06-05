@@ -1,7 +1,7 @@
 // src/App.js
 
 import "./App.css";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate  } from "react-router-dom";
 import { useState } from "react";
 import { TopNavigationBar } from "./components/header/topNavigationBar/topNavigationBar";
 import Home from "./pages/home";
@@ -49,13 +49,16 @@ function App() {
         <Route
           path="/cart"
           element={
-            <Basket cart={cart} setCart={setCart} convertPrice={convertPrice} />
+            auth ? ( // 인증 상태인 경우에만 Basket 컴포넌트를 렌더링합니다.
+              <Basket cart={cart} setCart={setCart} convertPrice={convertPrice} />
+            ) : (
+              <Navigate to="/login" /> // 비인증 상태에서는 로그인 페이지로 리디렉션합니다.
+            )
           }
         />
         <Route path="/login" element={<Login setAuth={setAuth} />} />
         <Route path="/register" element={<Register />} />
         <Route path="/mypage" element={<MyPage />} />
-        
       </Routes>
     </BrowserRouter>
   );
