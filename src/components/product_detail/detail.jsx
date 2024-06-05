@@ -5,7 +5,8 @@ import { getProducts } from "../../service/fetcher";
 
 export const Detail = ({ convertPrice, cart, setCart }) => {
   const { id } = useParams();
-  const [product, setProduct] = useState({});
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true); // 로딩 상태 추가
   const [count, setCount] = useState(1);
 
   // 상세페이지에서 물건 수량 조절
@@ -49,89 +50,97 @@ export const Detail = ({ convertPrice, cart, setCart }) => {
 
   useEffect(() => {
     getProducts().then((data) => {
-      setProduct(
-        data.data.products.find((product) => product.id === parseInt(id))
-      );
+      console.log('Fetched data:', data); // 콘솔 로그 추가
+      const foundProduct = data.data.products.find((product) => product.id === id);
+      console.log('Found product:', foundProduct); // 콘솔 로그 추가
+      setProduct(foundProduct);
+      setLoading(false); // 데이터 로딩 완료 후 로딩 상태를 false로 변경
     });
-  }, [id, product.price]);
+  }, [id]);
+
+  if (loading) {
+    return <div>Loading...</div>; // 로딩 중일 때 표시할 내용
+  }
+
+  if (!product) {
+    return <div>Product not found</div>; // product가 없을 때 표시할 내용
+  }
 
   return (
-    product && (
-      <>
-        <main className={styles.main}>
-          <section className={styles.product}>
-            <div className={styles.product_img}>
-              <img src={product.image} alt="product" />
+    <>
+      <main className={styles.main}>
+        <section className={styles.product}>
+          <div className={styles.product_img}>
+            <img src={product.image} alt="product" />
+          </div>
+        </section>
+        <section className={styles.product}>
+          <div className={styles.product_info}>
+            <p className={styles.seller_store}>{product.provider}</p>
+            <p className={styles.product_name}>{product.name}</p>
+            <span className={styles.price}>
+              {convertPrice(product.price + "")}
+              <span className={styles.unit}>원</span>
+            </span>
+          </div>
+
+          <div className={styles.delivery}>
+            <p>택배배송 / 무료배송</p>
+          </div>
+
+          <div className={styles.line}></div>
+
+          <div className={styles.amount}>
+            <img
+              className={styles.minus}
+              src="/images/icon-minus-line.svg"
+              alt="minus"
+              onClick={() => handleQuantity("minus")}
+            />
+
+            <div className={styles.count}>
+              <span>{count}</span>
             </div>
-          </section>
-          <section className={styles.product}>
-            <div className={styles.product_info}>
-              <p className={styles.seller_store}>{product.provider}</p>
-              <p className={styles.product_name}>{product.name}</p>
-              <span className={styles.price}>
-                {convertPrice(product.price + "")}
-                <span className={styles.unit}>원</span>
+
+            <img
+              className={styles.plus}
+              src="/images/icon-plus-line.svg"
+              alt="plus"
+              onClick={() => handleQuantity("plus")}
+            />
+          </div>
+
+          <div className={styles.line}></div>
+
+          <div className={styles.sum}>
+            <div>
+              <span className={styles.sum_price}>총 상품 금액</span>
+            </div>
+
+            <div className={styles.total_info}>
+              <span className={styles.total}>
+                총 수량 <span className={styles.total_count}>{count}개</span>
+              </span>
+              <span className={styles.total_price}>
+                {convertPrice(product.price * count)}
+                <span className={styles.total_unit}>원</span>
               </span>
             </div>
+          </div>
 
-            <div className={styles.delivery}>
-              <p>택배배송 / 무료배송</p>
-            </div>
-
-            <div className={styles.line}></div>
-
-            <div className={styles.amount}>
-              <img
-                className={styles.minus}
-                src="/images/icon-minus-line.svg"
-                alt="minus"
-                onClick={() => handleQuantity("minus")}
-              />
-
-              <div className={styles.count}>
-                <span>{count}</span>
-              </div>
-
-              <img
-                className={styles.plus}
-                src="/images/icon-plus-line.svg"
-                alt="plus"
-                onClick={() => handleQuantity("plus")}
-              />
-            </div>
-
-            <div className={styles.line}></div>
-
-            <div className={styles.sum}>
-              <div>
-                <span className={styles.sum_price}>총 상품 금액</span>
-              </div>
-
-              <div className={styles.total_info}>
-                <span className={styles.total}>
-                  총 수량 <span className={styles.total_count}>{count}개</span>
-                </span>
-                <span className={styles.total_price}>
-                  {convertPrice(product.price * count)}
-                  <span className={styles.total_unit}>원</span>
-                </span>
-              </div>
-            </div>
-
-            <div className={styles.btn}>
-              <button className={styles.btn_buy}>바로 구매</button>
-              <button
-                className={styles.btn_cart}
-                onClick={() => {
-                  handleCart();
-                }}
-              >
-                장바구니
-              </button>
-            </div>
-          </section>
-        </main>
-      </>
-    )
+          <div className={styles.btn}>
+            <button className={styles.btn_buy}>바로 구매</button>
+            <button
+              className={styles.btn_cart}
+              onClick={() => {
+                handleCart();
+              }}
+            >
+              장바구니
+            </button>
+          </div>
+        </section>
+      </main>
+    </>
   );
 };

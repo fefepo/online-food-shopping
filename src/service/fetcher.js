@@ -1,8 +1,11 @@
-import axios from "axios";
+import { db } from "../firebase";
+import { collection, getDocs } from "firebase/firestore";
 
-const apiUrl = "/data/products.json";
-
-export const getProducts = () => {
-  const res = axios(apiUrl);
-  return res;
+export const getProducts = async () => {
+  const products = [];
+  const querySnapshot = await getDocs(collection(db, "products"));
+  querySnapshot.forEach(doc => {
+    products.push({ id: doc.id, ...doc.data() });
+  });
+  return { data: { products } };
 };

@@ -1,11 +1,11 @@
 import styles from "./topNavigationBar.module.css";
 import { Link, useNavigate } from "react-router-dom";
 
-export const TopNavigationBar = ({ cart, isAuthenticated, logout }) => {
+export const TopNavigationBar = ({ cart, isAuthenticated, logout, isAdmin }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout(); // Call the passed logout function
+    logout(); 
     navigate("/login");
   };
 
@@ -38,18 +38,34 @@ export const TopNavigationBar = ({ cart, isAuthenticated, logout }) => {
           </div>
         </Link>
         {isAuthenticated ? (
-          <>
-            <Link to="/mypage">
-              <div className={styles.mypage}>
-                <img src="/images/icon-user.svg" alt="user" />
-                <span>마이페이지</span>
-              </div>
-            </Link>
-            <button onClick={handleLogout} className={styles.logoutButton}>
-              <img src="/images/icon-logout.svg" alt="logout" className={styles.logoutIcon} />
-              <span>로그아웃</span>
-            </button>
-          </>
+          isAdmin ? (
+            <>
+              <Link to="/admin">
+                <div className={styles.mypage}>
+                  <img src="/images/icon-user.svg" alt="user" />
+                  <span>관리자 페이지</span>
+                </div>
+              </Link>
+              <button onClick={handleLogout} className={styles.logoutButton}>
+                <img src="/images/icon-logout.svg" alt="logout" className={styles.logoutIcon} />
+                <span>로그아웃</span>
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/mypage">
+                <div className={styles.mypage}>
+                  <img src="/images/icon-user.svg" alt="user" />
+                  <span>마이페이지</span>
+                </div>
+              </Link>
+              <button onClick={handleLogout} className={styles.logoutButton}>
+                <img src="/images/icon-logout.svg" alt="logout" className={styles.logoutIcon} />
+                <span>로그아웃</span>
+              </button>
+            </>
+            
+          )
         ) : (
           <Link to="/login">
             <div className={styles.mypage}>

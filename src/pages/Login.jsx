@@ -1,12 +1,11 @@
-// src/pages/Login.js
-
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
+import { doc, getDoc } from "firebase/firestore";
 import styles from "./login.module.css";
 
-const Login = ({ setAuth }) => {
+const Login = ({ setAuth, setIsAdmin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -14,8 +13,15 @@ const Login = ({ setAuth }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Firestore에서 사용자 데이터 가져오기
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const userData = userDoc.data();
       setAuth(true);
+      setIsAdmin(userData.isAdmin || false);
+      
       navigate("/");
     } catch (error) {
       alert("로그인 실패: " + error.message);
