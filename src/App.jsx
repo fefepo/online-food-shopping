@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import MyPage from "./pages/MyPage";
 import AdminPage from "./pages/AdminPage";
+import OrderHistory from "./pages/OrderHistory";
 import { signOut } from "firebase/auth";
 import { auth } from "./firebase";
 
@@ -71,6 +72,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/order-history" element={<OrderHistory />} />
       </Routes>
     </BrowserRouter>
   );
