@@ -1,5 +1,4 @@
 // src/pages/Register.jsx
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -10,12 +9,15 @@ import styles from "./register.module.css";
 const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // 에러 메시지 초기화
+    setError("");
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -24,6 +26,9 @@ const Register = () => {
       await setDoc(doc(db, "users", user.uid), {
         email: user.email,
         uid: user.uid,
+        name,
+        phone,
+        address,
       });
 
       alert("회원가입 성공!");
@@ -43,6 +48,15 @@ const Register = () => {
         <h2>회원가입</h2>
         {error && <p className={styles.error}>{error}</p>}
         <div className={styles.formGroup}>
+          <label>이름</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+        </div>
+        <div className={styles.formGroup}>
           <label>이메일</label>
           <input
             type="email"
@@ -57,6 +71,24 @@ const Register = () => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label>연락처</label>
+          <input
+            type="text"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            required
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label>주소</label>
+          <input
+            type="text"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
             required
           />
         </div>
