@@ -10,13 +10,10 @@ export const Cart = ({ cart, setCart, convertPrice }) => {
   const isAllChecked =
     cart.length === checkLists.length && checkLists.length !== 0;
 
-  const found = checkLists.map((checkList) =>
-    cart.filter((el) => el.id === parseInt(checkList))
-  );
-
   const handleQuantity = (type, id, quantity) => {
     const found = cart.filter((el) => el.id === id)[0];
     const idx = cart.indexOf(found);
+    let updatedCart;
 
     if (type === "plus") {
       const cartItem = {
@@ -27,7 +24,8 @@ export const Cart = ({ cart, setCart, convertPrice }) => {
         price: found.price,
         provider: found.provider,
       };
-      setCart([...cart.slice(0, idx), cartItem, ...cart.slice(idx + 1)]);
+      updatedCart = [...cart.slice(0, idx), cartItem, ...cart.slice(idx + 1)];
+      setCart(updatedCart);
     } else {
       if (quantity === 0) return;
       const cartItem = {
@@ -38,31 +36,51 @@ export const Cart = ({ cart, setCart, convertPrice }) => {
         price: found.price,
         provider: found.provider,
       };
-      setCart([...cart.slice(0, idx), cartItem, ...cart.slice(idx + 1)]);
+      updatedCart = [...cart.slice(0, idx), cartItem, ...cart.slice(idx + 1)];
+      setCart(updatedCart);
     }
+    updateTotal(updatedCart, checkLists);
   };
 
   const handleRemove = (id) => {
-    setCart(cart.filter((cart) => cart.id !== id));
-    setCheckLists(checkLists.filter((check) => parseInt(check) !== id));
+    const updatedCart = cart.filter((cart) => cart.id !== id);
+    const updatedCheckLists = checkLists.filter((check) => parseInt(check) !== id);
+    setCart(updatedCart);
+    setCheckLists(updatedCheckLists);
+    updateTotal(updatedCart, updatedCheckLists);
   };
 
   const handleCheckList = (checked, id) => {
+    let updatedCheckLists = [];
     if (checked) {
-      setCheckLists([...checkLists, id]);
+      updatedCheckLists = [...checkLists, id];
     } else {
-      setCheckLists(checkLists.filter((check) => check !== id));
+      updatedCheckLists = checkLists.filter((check) => check !== id);
     }
+    setCheckLists(updatedCheckLists);
+    updateTotal(cart, updatedCheckLists);
   };
 
   const handleCheckAll = (checked) => {
     if (checked) {
-      const checkItems = [];
-      cart.map((cart) => checkItems.push(`${cart.id}`));
+      const checkItems = cart.map((cart) => `${cart.id}`);
       setCheckLists(checkItems);
+      updateTotal(cart, checkItems);
     } else {
       setCheckLists([]);
+      setTotal(0);
     }
+  };
+
+  const updateTotal = (cart, checkLists) => {
+    const selectedItems = cart.filter((item) =>
+      checkLists.includes(`${item.id}`)
+    );
+    const total = selectedItems.reduce(
+      (acc, item) => acc + item.price * item.quantity,
+      0
+    );
+    setTotal(total);
   };
 
   return (
@@ -91,11 +109,8 @@ export const Cart = ({ cart, setCart, convertPrice }) => {
       )}
       {cart.length !== 0 ? (
         <TotalCart
-          cart={cart}
           total={total}
-          setTotal={setTotal}
           convertPrice={convertPrice}
-          found={found}
         />
       ) : (
         ""
