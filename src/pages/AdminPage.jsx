@@ -8,6 +8,7 @@ const AdminPage = () => {
   const [newProduct, setNewProduct] = useState({ name: '', price: '', provider: '', image: '' });
   const [search, setSearch] = useState('');
   const [editingProduct, setEditingProduct] = useState(null);
+  const [providers, setProviders] = useState([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -17,7 +18,15 @@ const AdminPage = () => {
       setProducts(productList);
     };
 
+    const fetchProviders = async () => {
+      const providersCollection = collection(db, 'providers');
+      const providerSnapshot = await getDocs(providersCollection);
+      const providerList = providerSnapshot.docs.map(doc => doc.data().category);
+      setProviders(providerList);
+    };
+
     fetchProducts();
+    fetchProviders();
   }, []);
 
   const handleAddProduct = async () => {
@@ -79,12 +88,12 @@ const AdminPage = () => {
           value={newProduct.price}
           onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
         />
-        <input
-          type="text"
-          placeholder="제공자"
-          value={newProduct.provider}
-          onChange={(e) => setNewProduct({ ...newProduct, provider: e.target.value })}
-        />
+        <select value={newProduct.provider} onChange={(e) => setNewProduct({ ...newProduct, provider: e.target.value })}>
+          <option value="">카테고리 선택</option>
+          {providers.map(provider => (
+            <option key={provider} value={provider}>{provider}</option>
+          ))}
+        </select>
         <input
           type="text"
           placeholder="이미지 URL"
@@ -132,12 +141,12 @@ const AdminPage = () => {
             value={editingProduct.price}
             onChange={(e) => setEditingProduct({ ...editingProduct, price: e.target.value })}
           />
-          <input
-            type="text"
-            placeholder="제공자"
-            value={editingProduct.provider}
-            onChange={(e) => setEditingProduct({ ...editingProduct, provider: e.target.value })}
-          />
+          <select value={editingProduct.provider} onChange={(e) => setEditingProduct({ ...editingProduct, provider: e.target.value })}>
+            <option value="">카테고리 선택</option>
+            {providers.map(provider => (
+              <option key={provider} value={provider}>{provider}</option>
+            ))}
+          </select>
           <input
             type="text"
             placeholder="이미지 URL"
