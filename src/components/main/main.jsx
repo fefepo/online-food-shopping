@@ -1,16 +1,15 @@
-// src/components/main/main.jsx
 import styles from "./main.module.css";
 import { useEffect } from "react";
 import { EventBanner } from "../eventBanner/eventBanner";
 import { Product } from "../products/product";
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../../firebase';
 
 export const Main = ({ convertPrice, products, setProducts }) => {
   const sortProduct = (type) => {
     const newProduct = [...products];
     if (type === "recent") {
-      newProduct.sort((a, b) => a.id - b.id);
+      newProduct.sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
     } else if (type === "row") {
       newProduct.sort((a, b) => a.price - b.price);
     } else if (type === "high") {
@@ -22,7 +21,8 @@ export const Main = ({ convertPrice, products, setProducts }) => {
   useEffect(() => {
     const fetchProducts = async () => {
       const productsCollection = collection(db, 'products');
-      const productSnapshot = await getDocs(productsCollection);
+      const q = query(productsCollection, orderBy("createdAt", "desc"));
+      const productSnapshot = await getDocs(q);
       const productList = productSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setProducts(productList);
     };

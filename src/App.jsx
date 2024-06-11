@@ -10,6 +10,7 @@ import Register from "./pages/Register";
 import MyPage from "./pages/MyPage";
 import AdminPage from "./pages/AdminPage";
 import OrderHistory from "./pages/OrderHistory";
+import { SearchPage } from "./pages/SearchPage"; 
 import { signOut } from "firebase/auth";
 import { auth } from "./firebase";
 
@@ -73,6 +74,7 @@ function App() {
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/order-history" element={<OrderHistory />} />
+        <Route path="/search" element={<SearchPage convertPrice={convertPrice} />} /> {/* 추가된 라우트 */}
       </Routes>
     </BrowserRouter>
   );

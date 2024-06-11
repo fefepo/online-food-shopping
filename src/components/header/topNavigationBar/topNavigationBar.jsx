@@ -1,12 +1,20 @@
 import styles from "./topNavigationBar.module.css";
 import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 export const TopNavigationBar = ({ cart, isAuthenticated, logout, isAdmin }) => {
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleLogout = () => {
-    logout(); 
+    logout();
     navigate("/login");
+  };
+
+  const handleSearch = (e) => {
+    if (e.key === 'Enter') {
+      navigate(`/search?query=${searchTerm}`);
+    }
   };
 
   return (
@@ -18,8 +26,18 @@ export const TopNavigationBar = ({ cart, isAuthenticated, logout, isAdmin }) => 
           </h1>
         </Link>
         <div className={styles.input_wrap}>
-          <input type="text" placeholder="상품을 검색해보세요!" />
-          <img src="/images/icon-search.svg" alt="search" />
+          <input 
+            type="text" 
+            placeholder="상품을 검색해보세요!" 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyPress={handleSearch}
+          />
+          <img 
+            src="/images/icon-search.svg" 
+            alt="search" 
+            onClick={() => navigate(`/search?query=${searchTerm}`)} 
+          />
         </div>
       </div>
 
@@ -64,7 +82,6 @@ export const TopNavigationBar = ({ cart, isAuthenticated, logout, isAdmin }) => 
                 <span>로그아웃</span>
               </button>
             </>
-            
           )
         ) : (
           <Link to="/login">

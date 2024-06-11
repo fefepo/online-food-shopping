@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
-import { collection, addDoc, deleteDoc, doc, updateDoc, getDocs } from 'firebase/firestore';
+import { collection, addDoc, deleteDoc, doc, updateDoc, getDocs, serverTimestamp } from 'firebase/firestore';
 import styles from './adminPage.module.css';
 
 const AdminPage = () => {
@@ -22,8 +22,12 @@ const AdminPage = () => {
 
   const handleAddProduct = async () => {
     try {
-      const docRef = await addDoc(collection(db, 'products'), newProduct);
-      setProducts([...products, { id: docRef.id, ...newProduct }]);
+      const newProductWithTimestamp = {
+        ...newProduct,
+        createdAt: serverTimestamp() // createdAt 필드를 추가
+      };
+      const docRef = await addDoc(collection(db, 'products'), newProductWithTimestamp);
+      setProducts([...products, { id: docRef.id, ...newProductWithTimestamp }]);
       setNewProduct({ name: '', price: '', provider: '', image: '' });
     } catch (error) {
       console.error('Error adding product: ', error);

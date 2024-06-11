@@ -5,8 +5,9 @@ export const EventBanner = () => {
     <article
       className={styles.banner}
       style={{
-        backgroundImage: "url(/images/event.png",
-        backgroundSize: "100%",
+        backgroundImage: "url(/images/event.jpg",
+        backgroundSize: "cover",  
+        backgroundPosition: "center",
       }}
     >
       <div className={styles.right}>
