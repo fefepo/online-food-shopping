@@ -1,3 +1,4 @@
+// topNavigationBar.js
 import styles from "./topNavigationBar.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -22,7 +23,7 @@ export const TopNavigationBar = ({ cart, isAuthenticated, logout, isAdmin }) => 
       <div className={styles.inner}>
         <Link to="/">
           <h1 className={styles.logo}>
-            <img src="/images/logo.png" alt="logo" />
+            <img src="/images/logo.jpeg" alt="logo" />
           </h1>
         </Link>
         <div className={styles.input_wrap}>
@@ -39,8 +40,13 @@ export const TopNavigationBar = ({ cart, isAuthenticated, logout, isAdmin }) => 
             onClick={() => navigate(`/search?query=${searchTerm}`)} 
           />
         </div>
+        <Link to="/categories" className={styles.categoryLink}>
+          <button className={styles.drawerButton}>
+            카테고리
+          </button>
+        </Link>
       </div>
-
+      
       <div className={styles.menu}>
         <Link to="/cart">
           <div className={styles.shopping_cart}>
