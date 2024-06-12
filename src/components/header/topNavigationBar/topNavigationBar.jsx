@@ -42,6 +42,7 @@ export const TopNavigationBar = ({ cart, isAuthenticated, logout, isAdmin }) => 
         </div>
         <Link to="/categories" className={styles.categoryLink}>
           <button className={styles.drawerButton}>
+            <img src="/images/category.png" alt="category" />
             카테고리
           </button>
         </Link>
