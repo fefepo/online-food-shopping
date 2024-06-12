@@ -1,11 +1,10 @@
-// src/pages/MyPage.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, db, sendPasswordReset, deleteAccount } from "../firebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import './MyPage.css'; // 스타일 파일 임포트
+import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import "./MyPage.css";
 
-const MyPage = () => {
+const MyPage = ({ isAuthenticated, setIsAuthenticated }) => {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
   const [name, setName] = useState("");
@@ -43,39 +42,53 @@ const MyPage = () => {
         setIsEditing(false);
       }
     } catch (error) {
-      console.error("Error updating user data: ", error);
+      console.error("사용자 데이터 업데이트 오류: ", error);
       alert("정보 업데이트 실패: " + error.message);
     }
   };
 
   const handlePasswordReset = () => {
     sendPasswordReset(auth.currentUser.email);
-    alert('비밀번호 재설정 이메일이 전송되었습니다.');
+    alert("비밀번호 재설정 이메일이 전송되었습니다.");
   };
 
   const handleDeleteAccount = async () => {
     const isConfirmed = window.confirm("정말로 회원 탈퇴하시겠습니까?");
     if (isConfirmed) {
       try {
-        await deleteAccount();
-        alert('회원 탈퇴가 완료되었습니다.');
-        navigate('/');
+        const user = auth.currentUser;
+        if (user) {
+          // Firestore에서 사용자 데이터 삭제
+          await deleteDoc(doc(db, "users", user.uid));
+
+          // Authentication에서 사용자 계정 삭제
+          await deleteAccount();
+
+          // 사용자 로그아웃 처리
+          await auth.signOut();
+
+          // 로그아웃 상태로 업데이트
+          setIsAuthenticated(false);
+
+          alert("회원 탈퇴가 완료되었습니다.");
+          navigate("/");
+        }
       } catch (error) {
-        console.error("Error deleting account: ", error);
+        console.error("회원 탈퇴 오류: ", error);
         alert("회원 탈퇴 실패: " + error.message);
       }
     }
   };
 
   const handleOrderHistory = () => {
-    navigate('/order-history');
+    navigate("/order-history");
   };
 
   return (
     <div className="mypage-container">
       {userData ? (
         <>
-          <h2>{name} 님 반갑습니다.</h2> {/* 이메일 대신 이름을 표시 */}
+          <h2>{name} 님 반갑습니다.</h2>
           {isEditing ? (
             <form onSubmit={handleUpdate} className="update-form">
               <div className="formGroup">
@@ -106,16 +119,44 @@ const MyPage = () => {
                 />
               </div>
               <div className="button-container">
-                <button type="submit" className="mypage-button">정보 수정</button>
-                <button type="button" className="mypage-button" onClick={() => setIsEditing(false)}>취소</button>
+                <button type="submit" className="mypage-button">
+                  정보 수정
+                </button>
+                <button
+                  type="button"
+                  className="mypage-button"
+                  onClick={() => setIsEditing(false)}
+                >
+                  취소
+                </button>
               </div>
             </form>
           ) : (
             <div className="button-container">
-              <button className="mypage-button" onClick={handleOrderHistory}>주문 내역 조회</button>
-              <button className="mypage-button" onClick={() => setIsEditing(true)}>회원정보수정</button>
-              <button className="mypage-button" onClick={handlePasswordReset}>비밀번호 재설정</button>
-              <button className="mypage-button" onClick={handleDeleteAccount}>회원 탈퇴</button>
+              <button
+                className="mypage-button"
+                onClick={handleOrderHistory}
+              >
+                주문 내역 조회
+              </button>
+              <button
+                className="mypage-button"
+                onClick={() => setIsEditing(true)}
+              >
+                회원정보수정
+              </button>
+              <button
+                className="mypage-button"
+                onClick={handlePasswordReset}
+              >
+                비밀번호 재설정
+              </button>
+              <button
+                className="mypage-button"
+                onClick={handleDeleteAccount}
+              >
+                회원 탈퇴
+              </button>
             </div>
           )}
         </>

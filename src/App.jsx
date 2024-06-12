@@ -1,6 +1,5 @@
-import "./App.css";
+import React, { useState } from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
-import { useState } from "react";
 import { TopNavigationBar } from "./components/header/topNavigationBar/topNavigationBar";
 import Home from "./pages/home";
 import Product from "./pages/product";
@@ -10,8 +9,8 @@ import Register from "./pages/Register";
 import MyPage from "./pages/MyPage";
 import AdminPage from "./pages/AdminPage";
 import OrderHistory from "./pages/OrderHistory";
-import { CategoriesPage } from "./pages/CategoriesPage"; 
-import { SearchPage } from "./pages/SearchPage"; 
+import { CategoriesPage } from "./pages/CategoriesPage";
+import { SearchPage } from "./pages/SearchPage";
 import { signOut } from "firebase/auth";
 import { auth } from "./firebase";
 
@@ -27,18 +26,23 @@ function App() {
 
   const logout = async () => {
     try {
-      await signOut(auth); 
+      await signOut(auth);
       setAuthState(false);
-      alert("로그아웃 되었습니다."); 
+      alert("로그아웃 되었습니다.");
     } catch (error) {
       console.error("Error signing out: ", error);
-      alert("로그아웃 실패: " + error.message); 
+      alert("로그아웃 실패: " + error.message);
     }
   };
 
   return (
     <BrowserRouter>
-      <TopNavigationBar cart={cart} isAuthenticated={authState} logout={logout} isAdmin={isAdmin} />
+      <TopNavigationBar
+        cart={cart}
+        isAuthenticated={authState}
+        logout={logout}
+        isAdmin={isAdmin}
+      />
       <Routes>
         <Route
           path="/"
@@ -63,20 +67,33 @@ function App() {
         <Route
           path="/cart"
           element={
-            authState ? ( 
-              <Basket cart={cart} setCart={setCart} convertPrice={convertPrice} />
+            authState ? (
+              <Basket
+                cart={cart}
+                setCart={setCart}
+                convertPrice={convertPrice}
+              />
             ) : (
-              <Navigate to="/login" /> 
+              <Navigate to="/login" />
             )
           }
         />
-        <Route path="/login" element={<Login setAuth={setAuthState} setIsAdmin={setIsAdmin} />} />
+        <Route
+          path="/login"
+          element={<Login setAuth={setAuthState} setIsAdmin={setIsAdmin} />}
+        />
         <Route path="/register" element={<Register />} />
-        <Route path="/mypage" element={<MyPage />} />
+        <Route
+          path="/mypage"
+          element={<MyPage isAuthenticated={authState} setIsAuthenticated={setAuthState} />} // setIsAuthenticated를 props로 전달
+        />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/order-history" element={<OrderHistory />} />
-        <Route path="/categories" element={<CategoriesPage />} /> 
-        <Route path="/search" element={<SearchPage convertPrice={convertPrice} />} /> 
+        <Route path="/categories" element={<CategoriesPage />} />
+        <Route
+          path="/search"
+          element={<SearchPage convertPrice={convertPrice} />}
+        />
       </Routes>
     </BrowserRouter>
   );
