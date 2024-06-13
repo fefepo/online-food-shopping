@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useState } from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { TopNavigationBar } from "./components/header/topNavigationBar/topNavigationBar";
@@ -11,7 +12,7 @@ import AdminPage from "./pages/AdminPage";
 import OrderHistory from "./pages/OrderHistory";
 import { CategoriesPage } from "./pages/CategoriesPage";
 import { SearchPage } from "./pages/SearchPage";
-import { signOut } from "firebase/auth";
+import Wishlist from "./pages/Wishlist"; // 찜 페이지 추가
 import { auth } from "./firebase";
 
 function App() {
@@ -26,7 +27,7 @@ function App() {
 
   const logout = async () => {
     try {
-      await signOut(auth);
+      await auth.signOut();
       setAuthState(false);
       alert("로그아웃 되었습니다.");
     } catch (error) {
@@ -85,7 +86,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route
           path="/mypage"
-          element={<MyPage isAuthenticated={authState} setIsAuthenticated={setAuthState} />} // setIsAuthenticated를 props로 전달
+          element={<MyPage isAuthenticated={authState} setIsAuthenticated={setAuthState} />}
         />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/order-history" element={<OrderHistory />} />
@@ -94,6 +95,12 @@ function App() {
           path="/search"
           element={<SearchPage convertPrice={convertPrice} />}
         />
+        <Route path="/wishlist" element={ authState ? (
+        <Wishlist convertPrice={convertPrice} /> ) : (
+          <Navigate to="/login" />
+        )
+      }
+    />
       </Routes>
     </BrowserRouter>
   );

@@ -55,7 +55,7 @@
   font-size: 36px;
   line-height: 45px;
   color: #000000;
-  margin-bottom: 138px;
+  margin-bottom: 50px; /* 조정 */
 }
 
 .product_info .unit {
@@ -175,37 +175,41 @@
   color: #19ce60;
 }
 
-.btn .btn_buy {
-  width: 416px;
-  height: 60px;
-  border-radius: 5px;
-  background: #19ce60;
-  border: none;
-  cursor: pointer;
-  font-size: 18px;
-  font-weight: bold;
-  line-height: 22px;
-  color: #ffffff;
-  margin-right: 44px;
-}
-
 .btn {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.btn .btn_cart {
-  width: 200px;
-  height: 60px;
+.btn .btn_buy,
+.btn .btn_cart,
+.btn_wishlist {
+  width: 200px; /* 공통 너비 설정 */
+  height: 60px; /* 공통 높이 설정 */
   border-radius: 5px;
-  background: #767676;
+  background: #767676; /* 공통 배경색 설정 */
   border: none;
   cursor: pointer;
   font-size: 18px;
   font-weight: bold;
   line-height: 22px;
-  color: #ffffff;
+  color: #ffffff; /* 공통 텍스트 색상 설정 */
+}
+
+.btn .btn_buy {
+  background: #19ce60; /* 구매하기 버튼 배경색 */
+}
+
+.btn_wishlist {
+  background-color: #ff6f61; /* 찜 버튼 배경 색상 */
+}
+
+.btn_wishlist:hover {
+  background-color: #e65a50; /* 찜 버튼 호버 시 배경 색상 */
+}
+
+.btn_wishlist svg {
+  margin-right: 5px; /* 아이콘과 텍스트 사이 간격 */
 }
 
 .desc {
@@ -259,7 +263,8 @@
 @media (max-width: 380px) {
   .product_info .seller_store,
   .btn .btn_cart,
-  .btn .btn_buy {
+  .btn .btn_buy,
+  .btn_wishlist {
     font-size: 14px;
   }
 
@@ -272,4 +277,9 @@
   .sum {
     display: block;
   }
+}
+
+.btn {
+  display: flex;
+  gap: 10px;
 }

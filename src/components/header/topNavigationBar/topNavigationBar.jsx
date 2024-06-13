@@ -1,7 +1,9 @@
-// topNavigationBar.js
+// src/components/header/topNavigationBar/topNavigationBar.jsx
 import styles from "./topNavigationBar.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import FavoriteIcon from "@mui/icons-material/Favorite"; // 찜 아이콘 추가
 
 export const TopNavigationBar = ({ cart, isAuthenticated, logout, isAdmin }) => {
   const navigate = useNavigate();
@@ -13,7 +15,7 @@ export const TopNavigationBar = ({ cart, isAuthenticated, logout, isAdmin }) => 
   };
 
   const handleSearch = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       navigate(`/search?query=${searchTerm}`);
     }
   };
@@ -27,17 +29,17 @@ export const TopNavigationBar = ({ cart, isAuthenticated, logout, isAdmin }) => 
           </h1>
         </Link>
         <div className={styles.input_wrap}>
-          <input 
-            type="text" 
-            placeholder="상품을 검색해보세요!" 
+          <input
+            type="text"
+            placeholder="상품을 검색해보세요!"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyPress={handleSearch}
           />
-          <img 
-            src="/images/icon-search.svg" 
-            alt="search" 
-            onClick={() => navigate(`/search?query=${searchTerm}`)} 
+          <img
+            src="/images/icon-search.svg"
+            alt="search"
+            onClick={() => navigate(`/search?query=${searchTerm}`)}
           />
         </div>
         <Link to="/categories" className={styles.categoryLink}>
@@ -47,8 +49,14 @@ export const TopNavigationBar = ({ cart, isAuthenticated, logout, isAdmin }) => 
           </button>
         </Link>
       </div>
-      
+
       <div className={styles.menu}>
+        <Link to="/wishlist"> 
+          <div className={styles.shopping_cart}>
+            <FavoriteIcon />
+            <span>찜</span>
+          </div>
+        </Link>
         <Link to="/cart">
           <div className={styles.shopping_cart}>
             <img src="/images/icon-shopping-cart.svg" alt="cart" />
@@ -62,6 +70,7 @@ export const TopNavigationBar = ({ cart, isAuthenticated, logout, isAdmin }) => 
             )}
           </div>
         </Link>
+        
         {isAuthenticated ? (
           isAdmin ? (
             <>

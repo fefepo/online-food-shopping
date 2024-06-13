@@ -2,14 +2,24 @@ import styles from "./detail.module.css";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getProducts } from "../../service/fetcher";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import { collection, addDoc, doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { db, auth } from "../../firebase";
 
-export const Detail = ({ convertPrice, cart, setCart }) => {
+export const Detail = ({ convertPrice, cart, setCart, wishlist, setWishlist }) => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true); // 로딩 상태 추가
+  const [loading, setLoading] = useState(true);
   const [count, setCount] = useState(1);
 
-  // 상세페이지에서 물건 수량 조절
+  useEffect(() => {
+    getProducts().then((data) => {
+      const foundProduct = data.data.products.find((product) => product.id === id);
+      setProduct(foundProduct);
+      setLoading(false);
+    });
+  }, [id]);
+
   const handleQuantity = (type) => {
     if (type === "plus") {
       setCount(count + 1);
@@ -19,7 +29,6 @@ export const Detail = ({ convertPrice, cart, setCart }) => {
     }
   };
 
-  // 장바구니에 중복된 물건을 담을 때 사용
   const setQuantity = (id, quantity) => {
     const found = cart.filter((el) => el.id === id)[0];
     const idx = cart.indexOf(found);
@@ -48,22 +57,42 @@ export const Detail = ({ convertPrice, cart, setCart }) => {
     else setCart([...cart, cartItem]);
   };
 
-  useEffect(() => {
-    getProducts().then((data) => {
-      console.log('Fetched data:', data); // 콘솔 로그 추가
-      const foundProduct = data.data.products.find((product) => product.id === id);
-      console.log('Found product:', foundProduct); // 콘솔 로그 추가
-      setProduct(foundProduct);
-      setLoading(false); // 데이터 로딩 완료 후 로딩 상태를 false로 변경
-    });
-  }, [id]);
+  const handleWishlist = async () => {
+    const wishlistItem = {
+      id: product.id,
+      image: product.image,
+      name: product.name,
+      price: product.price,
+      provider: product.provider,
+    };
+  
+    const user = auth.currentUser;
+    if (!user) {
+      console.error("사용자 인증이 필요합니다.");
+      return;
+    }
+
+    // 사용자의 문서에 wishlist 필드에 상품 ID 추가
+    const userRef = doc(db, "users", user.uid);
+    try {
+      await updateDoc(userRef, {
+        wishlist: arrayUnion(wishlistItem)
+      });
+      console.log("상품을 찜 목록에 추가했습니다.");
+
+      // 상태 업데이트
+      setWishlist([...wishlist, wishlistItem]);
+    } catch (error) {
+      console.error("상품을 찜 목록에 추가하는 중 오류가 발생했습니다.", error);
+    }
+  };
 
   if (loading) {
-    return <div>Loading...</div>; // 로딩 중일 때 표시할 내용
+    return <div>Loading...</div>;
   }
 
   if (!product) {
-    return <div>Product not found</div>; // product가 없을 때 표시할 내용
+    return <div>Product not found</div>;
   }
 
   return (
@@ -137,6 +166,16 @@ export const Detail = ({ convertPrice, cart, setCart }) => {
               }}
             >
               장바구니
+            </button>
+            <button
+              className={styles.btn_wishlist}
+              onClick={() => {
+                handleWishlist();
+                alert("상품을 찜 목록에 추가했습니다.");
+              }}
+            >
+              <FavoriteIcon /> 찜
+              
             </button>
           </div>
         </section>
