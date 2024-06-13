@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./searchPage.module.css";
 import { useLocation } from "react-router-dom";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebase";
 import { Product } from "../components/products/product";
 import { EventBanner } from "../components/eventBanner/eventBanner";
@@ -27,27 +27,53 @@ export const SearchPage = ({ convertPrice }) => {
   };
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchProductsAndIngredients = async () => {
       try {
         const productsCollection = collection(db, 'products');
+        const ingredientsCollection = collection(db, 'ingredients');
+
+        // 검색어에 해당하는 제품 필터링
         const productSnapshot = await getDocs(productsCollection);
         const productList = productSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-        // 이름에 검색어가 포함된 제품만 필터링
         const filteredProducts = productList.filter(product =>
           product.name.includes(searchTerm)
         );
 
-        console.log("Fetched products:", filteredProducts);
-        setSearchResults(filteredProducts);
-        setSortedResults(filteredProducts); // 초기 정렬 설정
+        // 음식에 해당하는 재료 가져오기
+        const ingredientQuery = query(ingredientsCollection, where("__name__", "==", searchTerm));
+        const ingredientSnapshot = await getDocs(ingredientQuery);
+
+        let ingredientList = [];
+        ingredientSnapshot.forEach(doc => {
+          const data = doc.data();
+          ingredientList = Object.values(data);
+        });
+
+        console.log("Ingredients List: ", ingredientList);
+
+        // 재료 이름으로 제품 검색
+        let ingredientProducts = [];
+        if (ingredientList.length > 0) {
+          const ingredientProductQuery = query(productsCollection, where("name", "in", ingredientList));
+          const ingredientProductSnapshot = await getDocs(ingredientProductQuery);
+          ingredientProducts = ingredientProductSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        }
+
+        console.log("Ingredient Products: ", ingredientProducts);
+
+        // 제품과 재료 제품 합치기
+        const combinedResults = [...filteredProducts, ...ingredientProducts];
+
+        console.log("Combined Results: ", combinedResults);
+        setSearchResults(combinedResults);
+        setSortedResults(combinedResults); // 초기 정렬 설정
       } catch (error) {
-        console.error("Error fetching products: ", error);
+        console.error("Error fetching products and ingredients: ", error);
       }
     };
 
     if (searchTerm) {
-      fetchProducts();
+      fetchProductsAndIngredients();
     }
   }, [searchTerm]);
 
