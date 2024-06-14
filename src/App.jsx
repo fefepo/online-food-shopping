@@ -96,7 +96,7 @@ function App() {
           element={<SearchPage convertPrice={convertPrice} />}
         />
         <Route path="/wishlist" element={ authState ? (
-        <Wishlist convertPrice={convertPrice} /> ) : (
+        <Wishlist convertPrice={convertPrice} cart={cart} setCart={setCart} /> ) : (
           <Navigate to="/login" />
         )
       }

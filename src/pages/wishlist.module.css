@@ -1,30 +1,44 @@
 /* src/pages/wishlist.module.css */
 .wishlistContainer {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* 필요에 따라 너비 조정 */
+  gap: 20px;
+  padding: 20px;
+}
+
+@media (max-width: 768px) {
+  .wishlistContainer {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
-  
-  @media (max-width: 768px) {
-    .wishlistContainer {
-      grid-template-columns: repeat(2, 1fr);
-    }
+}
+
+@media (max-width: 480px) {
+  .wishlistContainer {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   }
-  
-  @media (max-width: 480px) {
-    .wishlistContainer {
-      grid-template-columns: repeat(1, 1fr);
-    }
-  }
-  
+}
+.productContainer {
+  width: 100%; /* 그리드 열 설정에 따라 조정 */
+  background: #fff;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+@media (min-width: 768px) {
   .productContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
+    width: calc(50% - 20px); /* 대형 화면에서 두 열 표시 예제 */
   }
+}
+
+@media (min-width: 1200px) {
+  .productContainer {
+    width: calc(33.333% - 20px); /* 대형 화면에서 세 열 표시 예제 */
+  }
+}
+
   
   .productImage {
     width: 100%; /* 이미지가 부모 요소에 꽉 차도록 */
@@ -42,4 +56,303 @@
     object-fit: cover; /* 이미지 비율 유지하며 자르기 */
   }
   
- 
+ .wishlistContainer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding: 20px;
+}
+
+@media (max-width: 768px) {
+  .wishlistContainer {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .wishlistContainer {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+.productContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+
+.productImage {
+  width: 100%;
+  height: auto;
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: cover;
+}
+
+.removeButton,
+.addToSetButton {
+  width: 100%;
+  height: auto;
+  max-width: 390px;
+  max-height: 200px;
+  object-fit: cover;
+}
+
+.createSetContainer {
+  margin-top: 20px;
+}
+
+.wishlistSets {
+  margin-top: 20px;
+}
+
+.wishlistSet {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.wishlistSet h4 {
+  margin: 0;
+}
+
+.container {
+  display: flex;
+  padding: 20px;
+}
+
+.sidebar {
+  width: 20%;
+  border-right: 1px solid #ddd;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar h2, .sidebar h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.tabList {
+  list-style: none;
+  padding: 0;
+}
+
+.tabList li {
+  padding: 10px 15px;
+  margin-bottom: 5px;
+  cursor: pointer;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.tabList li:hover,
+.tabList li.selected {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.createSetContainer {
+  margin-top: 20px;
+}
+
+.content {
+  flex-grow: 1;
+  padding: 20px;
+}
+
+.content h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.productGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+@media (max-width: 768px) {
+  .productGrid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Adjust for smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .productGrid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Adjust for mobile screens */
+  }
+}
+.productContainer {
+  width: calc(30% - 20px); /* 각 상품이 가로에 3개씩 출력되도록 설정 */
+  background: #fff;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+@media (max-width: 768px) {
+  .productContainer {
+    width: calc(50% - 20px); /* 중형 화면에서 2개씩 출력 */
+  }
+}
+
+@media (max-width: 480px) {
+  .productContainer {
+    width: calc(100% - 20px); /* 작은 화면에서 1개씩 출력 */
+  }
+}
+.productContainer:hover {
+  transform: translateY(-5px);
+}
+
+.wishlistSet {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.wishlistSet h4 {
+  margin: 0 0 10px;
+}
+
+.container {
+  display: flex;
+  padding: 20px;
+}
+
+.sidebar {
+  width: 20%;
+  border-right: 1px solid #ddd;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar h2, .sidebar h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.tabList {
+  list-style: none;
+  padding: 0;
+}
+
+.tabList li {
+  padding: 10px 15px;
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+
+.setItems {
+  display: flex;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Adjust columns as per your design */
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .setItems {
+    grid-template-columns: repeat(2, 1fr); /* Adjust for smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .setItems {
+    grid-template-columns: repeat(1, 1fr); /* Adjust for mobile screens */
+  }
+}
+
+
+.setContainer {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.setContainer h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.setItems {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.setItem {
+  flex: 1 1 200px; /* 아이템 너비 설정 */
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  transition: transform 0.3s;
+}
+
+.setItem:hover {
+  transform: translateY(-5px);
+}
+
+.setItem h4 {
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+
+.setActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.setActions .button {
+  width: auto;
+  padding: 8px 16px;
+}
+
+.setActions .button:first-child {
+  margin-right: 10px;
+}
+
+
+.button {
+  display: inline-block;
+  padding: 10px 20px;
+  margin-right: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: #fff;
+  transition: background-color 0.3s;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+.button.secondary {
+  background-color: #6c757d;
+}
+
+.button.secondary:hover {
+  background-color: #5a6268;
+}
+
+.button.danger {
+  background-color: #dc3545;
+}
+
+.button.danger:hover {
+  background-color: #c82333;
+}

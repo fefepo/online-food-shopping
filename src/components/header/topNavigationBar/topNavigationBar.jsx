@@ -31,7 +31,7 @@ export const TopNavigationBar = ({ cart, isAuthenticated, logout, isAdmin }) => 
         <div className={styles.input_wrap}>
           <input
             type="text"
-            placeholder="상품을 검색해보세요!"
+            placeholder="상품 또는 음식을 검색해보세요!"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyPress={handleSearch}
