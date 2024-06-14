@@ -13,6 +13,7 @@ export const SearchPage = ({ convertPrice }) => {
 
   const [searchResults, setSearchResults] = useState([]);
   const [sortedResults, setSortedResults] = useState([]);
+  const [ingredientList, setIngredientList] = useState([]);
 
   const sortProduct = (type) => {
     const newProduct = [...searchResults];
@@ -50,13 +51,14 @@ export const SearchPage = ({ convertPrice }) => {
         });
 
         console.log("Ingredients List: ", ingredientList);
+        setIngredientList(ingredientList);
 
-        // 재료 이름으로 제품 검색
+        // 재료 이름을 포함하는 제품 검색
         let ingredientProducts = [];
         if (ingredientList.length > 0) {
-          const ingredientProductQuery = query(productsCollection, where("name", "in", ingredientList));
-          const ingredientProductSnapshot = await getDocs(ingredientProductQuery);
-          ingredientProducts = ingredientProductSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          ingredientProducts = productList.filter(product =>
+            ingredientList.some(ingredient => product.name.includes(ingredient))
+          );
         }
 
         console.log("Ingredient Products: ", ingredientProducts);
@@ -64,9 +66,14 @@ export const SearchPage = ({ convertPrice }) => {
         // 제품과 재료 제품 합치기
         const combinedResults = [...filteredProducts, ...ingredientProducts];
 
-        console.log("Combined Results: ", combinedResults);
-        setSearchResults(combinedResults);
-        setSortedResults(combinedResults); // 초기 정렬 설정
+        // 중복 제거
+        const uniqueResults = combinedResults.filter((result, index, self) =>
+          index === self.findIndex((r) => r.id === result.id)
+        );
+
+        console.log("Combined Results: ", uniqueResults);
+        setSearchResults(uniqueResults);
+        setSortedResults(uniqueResults); // 초기 정렬 설정
       } catch (error) {
         console.error("Error fetching products and ingredients: ", error);
       }
@@ -80,6 +87,15 @@ export const SearchPage = ({ convertPrice }) => {
   return (
     <>
       <EventBanner />
+      {ingredientList.length > 0 && (
+        <div className={styles.ingredientList}>
+          {ingredientList.map((ingredient, index) => (
+            <div key={index} className={styles.ingredientItem}>
+              {ingredient}
+            </div>
+          ))}
+        </div>
+      )}
       <div className={styles.filter}>
         <p onClick={() => sortProduct("recent")}>최신순</p>
         <p onClick={() => sortProduct("low")}>낮은 가격</p>

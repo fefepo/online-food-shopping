@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getProducts } from "../../service/fetcher";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { collection, addDoc, doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { db, auth } from "../../firebase";
 
 export const Detail = ({ convertPrice, cart, setCart, wishlist, setWishlist }) => {
