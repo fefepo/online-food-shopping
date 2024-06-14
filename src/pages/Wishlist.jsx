@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { collection, getDocs, query, where, doc, setDoc, addDoc } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, setDoc } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import { Product } from "../components/products/product";
 import styles from "./wishlist.module.css";
 
-const Wishlist = ({ convertPrice,cart, setCart  }) => {
+const Wishlist = ({ convertPrice, cart, setCart }) => {
   const [wishlist, setWishlist] = useState([]);
   const [wishlistSets, setWishlistSets] = useState([]);
   const [newSetName, setNewSetName] = useState("");
@@ -43,7 +43,7 @@ const Wishlist = ({ convertPrice,cart, setCart  }) => {
           const userRef = doc(db, "users", querySnapshot.docs[0].id);
           const userData = querySnapshot.docs[0].data();
           const updatedWishlist = userData.wishlist.filter(item => item.id !== productId);
-          
+
           await setDoc(userRef, { wishlist: updatedWishlist }, { merge: true });
           setWishlist(updatedWishlist);
           alert("상품이 찜 목록에서 삭제되었습니다.");
@@ -66,11 +66,13 @@ const Wishlist = ({ convertPrice,cart, setCart  }) => {
         if (!querySnapshot.empty) {
           const userRef = doc(db, "users", querySnapshot.docs[0].id);
           const userData = querySnapshot.docs[0].data();
-          const updatedWishlistSets = [...userData.wishlistSets, newSet];
+
+          // Ensure wishlistSets is an array before pushing the new set
+          const updatedWishlistSets = [...(userData.wishlistSets || []), newSet];
 
           await setDoc(userRef, { wishlistSets: updatedWishlistSets }, { merge: true });
           setWishlistSets(updatedWishlistSets);
-          
+
           setNewSetName("");
           alert("세트가 생성되었습니다.");
         } else {
@@ -94,7 +96,7 @@ const Wishlist = ({ convertPrice,cart, setCart  }) => {
 
           // Check if the item already exists in the set
           let itemExists = false;
-          const updatedWishlistSets = userData.wishlistSets.map(set => {
+          const updatedWishlistSets = (userData.wishlistSets || []).map(set => {
             if (set.name === setName) {
               // Check if the item is already in the set
               if (!set.items.some(existingItem => existingItem.id === item.id)) {
@@ -134,7 +136,7 @@ const Wishlist = ({ convertPrice,cart, setCart  }) => {
           const userRef = doc(db, "users", querySnapshot.docs[0].id);
           const userData = querySnapshot.docs[0].data();
 
-          const updatedWishlistSets = userData.wishlistSets.map(set => {
+          const updatedWishlistSets = (userData.wishlistSets || []).map(set => {
             if (set.name === setName) {
               set.items = set.items.filter(item => item.id !== itemId);
             }
@@ -152,12 +154,13 @@ const Wishlist = ({ convertPrice,cart, setCart  }) => {
       }
     }
   };
+
   const handleAddSetToCart = (items) => {
     console.log("추가할 세트의 아이템들:", items);
-  
+
     // cart 상태가 배열이 아닌 경우, 기본적으로 빈 배열로 설정
     const updatedCart = Array.isArray(cart) ? [...cart] : [];
-  
+
     items.forEach((item) => {
       const foundItem = updatedCart.find(cartItem => cartItem.id === item.id);
       if (foundItem) {
@@ -168,13 +171,11 @@ const Wishlist = ({ convertPrice,cart, setCart  }) => {
         console.log(`${item.name}이(가) 장바구니에 추가되었습니다.`);
       }
     });
-  
+
     setCart(updatedCart);
     console.log("업데이트된 장바구니:", updatedCart);
     alert("세트의 상품이 장바구니에 추가되었습니다.");
   };
-  
-  
 
   const handleRemoveSet = async (setName) => {
     const user = auth.currentUser;
@@ -185,7 +186,7 @@ const Wishlist = ({ convertPrice,cart, setCart  }) => {
         if (!querySnapshot.empty) {
           const userRef = doc(db, "users", querySnapshot.docs[0].id);
           const userData = querySnapshot.docs[0].data();
-          const updatedWishlistSets = userData.wishlistSets.filter(set => set.name !== setName);
+          const updatedWishlistSets = (userData.wishlistSets || []).filter(set => set.name !== setName);
 
           await setDoc(userRef, { wishlistSets: updatedWishlistSets }, { merge: true });
           setWishlistSets(updatedWishlistSets);
@@ -242,7 +243,7 @@ const Wishlist = ({ convertPrice,cart, setCart  }) => {
                     <button className={`${styles.button} ${styles.danger}`} onClick={() => removeFromWishlist(item.id)}>삭제</button>
                     {wishlistSets.map(set => (
                       <button
-                      className={styles.button}
+                        className={styles.button}
                         key={set.name}
                         onClick={() => handleAddItemToSet(set.name, item)}
                       >
@@ -251,53 +252,52 @@ const Wishlist = ({ convertPrice,cart, setCart  }) => {
                     ))}
                   </div>
                 ))
-                ) : (
-                  <p>찜한 상품이 없습니다.</p>
-                )}
-              </div>
-            </>
-          ) : (
-              <>
-                <h2>찜한 세트들</h2>
-                <div className={styles.setsContainer}>
-                  {wishlistSets.length > 0 ? (
-                    wishlistSets.map(set => (
-                      <div key={set.name} className={styles.setContainer}>
-                        <h3>{set.name}</h3>
-                        <div className={styles.setItems}>
-                          {set.items.length > 0 ? (
-                            set.items.map(item => (
-                              <div key={item.id} className={styles.productContainer}>
-                                <Product product={item} convertPrice={convertPrice} />
-                                <button className={`${styles.button} ${styles.danger}`} onClick={() => handleRemoveItemFromSet(set.name, item.id)}>
-                                  삭제
-                                </button>
-                              </div>
-                            ))
-                          ) : (
-                            <p>이 세트에 추가된 상품이 없습니다.</p>
-                          )}
-                        </div>
-                        <div className={styles.setActions}>
-                        <button className={styles.button} onClick={() => handleAddSetToCart(set.items)}>
-                          장바구니에 추가
-                        </button>
-                        <button className={`${styles.button} ${styles.danger}`} onClick={() => handleRemoveSet(set.name)}>
-                          세트 삭제
-                        </button>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <p>생성된 찜 세트가 없습니다.</p>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-        );
-        };
-        
-        export default Wishlist;
-        
+              ) : (
+                <p>찜한 상품이 없습니다.</p>
+              )}
+            </div>
+          </>
+        ) : (
+          <>
+            <h2>찜한 세트들</h2>
+            <div className={styles.setsContainer}>
+              {wishlistSets.length > 0 ? (
+                wishlistSets.map(set => (
+                  <div key={set.name} className={styles.setContainer}>
+                    <h3>{set.name}</h3>
+                    <div className={styles.setItems}>
+                      {set.items.length > 0 ? (
+                        set.items.map(item => (
+                          <div key={item.id} className={styles.productContainer}>
+                            <Product product={item} convertPrice={convertPrice} />
+                            <button className={`${styles.button} ${styles.danger}`} onClick={() => handleRemoveItemFromSet(set.name, item.id)}>
+                              삭제
+                            </button>
+                          </div>
+                        ))
+                      ) : (
+                        <p>이 세트에 추가된 상품이 없습니다.</p>
+                      )}
+                    </div>
+                    <div className={styles.setActions}>
+                      <button className={styles.button} onClick={() => handleAddSetToCart(set.items)}>
+                        장바구니에 추가
+                      </button>
+                      <button className={`${styles.button} ${styles.danger}`} onClick={() => handleRemoveSet(set.name)}>
+                        세트 삭제
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p>생성된 찜 세트가 없습니다.</p>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Wishlist;
