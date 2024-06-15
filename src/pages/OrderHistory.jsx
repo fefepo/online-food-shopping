@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { getOrders } from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../firebase";
-//d
+import styles from "./orderHistory.module.css"; 
+
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
   const [user] = useAuthState(auth);
@@ -11,6 +12,7 @@ const OrderHistory = () => {
     const fetchOrders = async () => {
       if (user) {
         const ordersData = await getOrders(user.uid);
+        console.log("Fetched Orders:", ordersData);
         setOrders(ordersData);
       }
     };
@@ -18,35 +20,24 @@ const OrderHistory = () => {
     fetchOrders();
   }, [user]);
 
-  const calculateTotalQuantity = (items) => {
-    return items.reduce((total, item) => total + item.quantity, 0);
-  };
-
-  const calculateTotalPrice = (items) => {
-    return items.reduce((total, item) => total + item.price * item.quantity, 0);
-  };
-
   return (
-    <div>
-      <h1>Order History</h1>
-      <ul>
-        {orders.map((order) => (
-          <li key={order.id}>
-            <h2>Order ID: {order.id}</h2>
-            <ul>
-              {order.items.map((item, index) => (
-                <li key={index}>
-                  <p>Product Name: {item.productName}</p>
-                  <p>Quantity: {item.quantity}</p>
-                  <p>Price: {item.price}</p>
-                </li>
-              ))}
-            </ul>
-            <p>Total Quantity: {calculateTotalQuantity(order.items)}</p>
-            <p>Total Price: {calculateTotalPrice(order.items)}</p>
-          </li>
-        ))}
-      </ul>
+    <div className={styles.container}>
+      <h1>구매 내역</h1>
+      {orders.length === 0 ? (
+        <p className={styles.noOrders}>구매 내역이 없습니다.</p>
+      ) : (
+        <div className={styles.ordersGrid}>
+          {orders.map((order) => (
+            <div key={order.id} className={styles.orderItem}>
+              <img src={order.productImage} alt={order.productName} className={styles.productImage} />
+              <p className={styles.productName}>{order.productName}</p>
+              <p>구매 개수: {order.quantity}</p>
+              <p>결제 금액: {order.totalAmount}원</p>
+              <p>구매 날짜: {new Date(order.orderDate).toLocaleDateString()}</p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

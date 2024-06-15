@@ -53,8 +53,7 @@ export const CartList = ({
       </div>
 
       <div className={styles.cart_product_price}>
-        <p className={styles.total_price}></p>
-        <button className={styles.btn_submit}>주문하기</button>
+        <p style={{ color: "black" }}>{convertPrice(cart.price * cart.quantity)}원</p>
       </div>
 
       <div

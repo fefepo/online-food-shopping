@@ -57,9 +57,9 @@ export const changePassword = async (currentPassword, newPassword) => {
   }
 };
 
-export const getOrders = async (customerId) => {
+export const getOrders = async (userId) => {
   try {
-    const ordersQuery = query(collection(db, "orders"), where("customerId", "==", customerId));
+    const ordersQuery = query(collection(db, "orders"), where("userId", "==", userId));
     const querySnapshot = await getDocs(ordersQuery);
     const orders = [];
     querySnapshot.forEach((doc) => {

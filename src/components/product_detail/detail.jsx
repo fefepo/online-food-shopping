@@ -1,9 +1,9 @@
 import styles from "./detail.module.css";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getProducts } from "../../service/fetcher";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { collection, addDoc, doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 import { db, auth } from "../../firebase";
 
 export const Detail = ({ convertPrice, cart, setCart, wishlist, setWishlist }) => {
@@ -11,6 +11,7 @@ export const Detail = ({ convertPrice, cart, setCart, wishlist, setWishlist }) =
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [count, setCount] = useState(1);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getProducts().then((data) => {
@@ -44,6 +45,13 @@ export const Detail = ({ convertPrice, cart, setCart, wishlist, setWishlist }) =
   };
 
   const handleCart = () => {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("로그인 후 이용 가능합니다.");
+      navigate("/login");
+      return;
+    }
+
     const cartItem = {
       id: product.id,
       image: product.image,
@@ -55,9 +63,17 @@ export const Detail = ({ convertPrice, cart, setCart, wishlist, setWishlist }) =
     const found = cart.find((el) => el.id === cartItem.id);
     if (found) setQuantity(cartItem.id, found.quantity + count);
     else setCart([...cart, cartItem]);
+    alert("장바구니에 담겼습니다.");
   };
 
   const handleWishlist = async () => {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("로그인 후 이용 가능합니다.");
+      navigate("/login");
+      return;
+    }
+
     const wishlistItem = {
       id: product.id,
       image: product.image,
@@ -65,25 +81,58 @@ export const Detail = ({ convertPrice, cart, setCart, wishlist, setWishlist }) =
       price: product.price,
       provider: product.provider,
     };
-  
-    const user = auth.currentUser;
-    if (!user) {
-      console.error("사용자 인증이 필요합니다.");
-      return;
-    }
 
-    // 사용자의 문서에 wishlist 필드에 상품 ID 추가
     const userRef = doc(db, "users", user.uid);
     try {
       await updateDoc(userRef, {
         wishlist: arrayUnion(wishlistItem)
       });
       console.log("상품을 찜 목록에 추가했습니다.");
+      alert("상품을 찜 목록에 추가했습니다.");
 
-      // 상태 업데이트
       setWishlist([...wishlist, wishlistItem]);
     } catch (error) {
       console.error("상품을 찜 목록에 추가하는 중 오류가 발생했습니다.", error);
+    }
+  };
+
+  const handleBuyNow = async () => {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("로그인 후 이용 가능합니다.");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (!userDoc.exists()) {
+        console.error("사용자 정보를 찾을 수 없습니다.");
+        return;
+      }
+      const userData = userDoc.data();
+
+      const orderData = {
+        userId: user.uid,
+        userName: userData.name,
+        userPhone: userData.phone,
+        userEmail: userData.email,
+        userAddress: userData.address,
+        productId: product.id,
+        productName: product.name,
+        productImage: product.image,
+        productPrice: product.price,
+        productProvider: product.provider,
+        quantity: count,
+        totalAmount: product.price * count,
+        orderDate: new Date().toISOString()
+      };
+
+      await addDoc(collection(db, "orders"), orderData);
+
+      alert("구매가 완료되었습니다.");
+    } catch (error) {
+      console.error("구매 처리 중 오류가 발생했습니다.", error);
     }
   };
 
@@ -158,24 +207,20 @@ export const Detail = ({ convertPrice, cart, setCart, wishlist, setWishlist }) =
           </div>
 
           <div className={styles.btn}>
-            <button className={styles.btn_buy}>바로 구매</button>
+            <button className={styles.btn_buy} onClick={handleBuyNow}>
+              바로 구매
+            </button>
             <button
               className={styles.btn_cart}
-              onClick={() => {
-                handleCart();
-              }}
+              onClick={handleCart}
             >
               장바구니
             </button>
             <button
               className={styles.btn_wishlist}
-              onClick={() => {
-                handleWishlist();
-                alert("상품을 찜 목록에 추가했습니다.");
-              }}
+              onClick={handleWishlist}
             >
               <FavoriteIcon /> 찜
-              
             </button>
           </div>
         </section>

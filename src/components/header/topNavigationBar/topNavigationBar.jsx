@@ -11,7 +11,7 @@ export const TopNavigationBar = ({ cart, isAuthenticated, logout, isAdmin }) => 
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate("/");
   };
 
   const handleSearch = (e) => {
