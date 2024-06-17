@@ -68,55 +68,86 @@ export const Cart = ({ cart, setCart, convertPrice }) => {
       return;
     }
 
-    // 선택된 상품이 없으면 알림 메시지 표시
     if (checkLists.length === 0) {
       alert("선택된 상품이 없습니다.");
       return;
     }
 
     try {
-      // 사용자 정보 가져오기
       const userDoc = await getDoc(doc(db, "users", user.uid));
       if (!userDoc.exists()) {
         console.error("사용자 정보를 찾을 수 없습니다.");
         return;
       }
       const userData = userDoc.data();
-
-      // 주문할 아이템 필터링
       const selectedItems = cart.filter((item) => checkLists.includes(item.id));
 
-      // 각 아이템에 대해 주문 데이터 생성 및 저장
-      const orderPromises = selectedItems.map((item) => {
-        const orderData = {
-          userId: user.uid,
-          userName: userData.name,
-          userPhone: userData.phone,
-          userEmail: userData.email,
-          userAddress: userData.address,
-          productId: item.id,
-          productName: item.name,
-          productImage: item.image,
-          productPrice: item.price,
-          productProvider: item.provider,
-          quantity: item.quantity,
-          totalAmount: item.price * item.quantity,
-          orderDate: new Date().toISOString()
-        };
-        return addDoc(collection(db, "orders"), orderData);
-      });
+      // Bootpay 결제 요청
+      if (window.Bootpay) {
+        window.Bootpay.requestPayment({
+          application_id: '666f89302ec2db891542ecae',  // Bootpay JS 키를 여기에 입력하세요
+          price: total,
+          order_name: 'Cart Order',
+          order_id: new Date().getTime().toString(), // 임의의 고유 주문 ID
+          pg: '카카오페이',
+          method: '카카오페이',
+          user: {
+            id: user.uid,
+            username: userData.name || 'User',
+            phone: userData.phone || '01000000000',
+            email: user.email,
+          },
+          items: selectedItems.map(item => ({
+            id: item.id,
+            name: item.name,
+            qty: item.quantity,
+            price: item.price,
+          })),
+          extra: {
+            open_type: 'iframe',
+            card_quota: '0,2,3',
+            escrow: false,
+          },
+        })
+        .then(async (response) => {
+          console.log(response);
 
-      // 모든 주문 저장이 완료될 때까지 기다림
-      await Promise.all(orderPromises);
+          // 결제 성공 시 주문 정보 저장
+          const orderPromises = selectedItems.map((item) => {
+            const orderData = {
+              userId: user.uid,
+              userName: userData.name,
+              userPhone: userData.phone,
+              userEmail: userData.email,
+              userAddress: userData.address,
+              productId: item.id,
+              productName: item.name,
+              productImage: item.image,
+              productPrice: item.price,
+              productProvider: item.provider,
+              quantity: item.quantity,
+              totalAmount: item.price * item.quantity,
+              orderDate: new Date().toISOString(),
+            };
+            return addDoc(collection(db, "orders"), orderData);
+          });
 
-      // 주문된 아이템을 장바구니에서 제거
-      const remainingCartItems = cart.filter((item) => !checkLists.includes(item.id));
-      setCart(remainingCartItems);
-      setCheckLists([]);
-      updateTotal(remainingCartItems, []);
+          await Promise.all(orderPromises);
 
-      // 알림 표시
-      alert("주문이 완료되었습니다.");
+          const remainingCartItems = cart.filter((item) => !checkLists.includes(item.id));
+          setCart(remainingCartItems);
+          setCheckLists([]);
+          updateTotal(remainingCartItems, []);
+
+          alert("결제가 완료되었습니다.");
+        })
+        .catch((error) => {
+          console.error('결제 실패', error);
+          alert('결제에 실패했습니다.');
+        });
+      } else {
+        console.error('Bootpay SDK가 로드되지 않았습니다.');
+      }
     } catch (error) {
       console.error("주문 처리 중 오류가 발생했습니다.", error);
     }
