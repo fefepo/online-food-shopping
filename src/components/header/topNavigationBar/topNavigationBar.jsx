@@ -1,9 +1,7 @@
-// src/components/header/topNavigationBar/topNavigationBar.jsx
 import styles from "./topNavigationBar.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import FavoriteIcon from "@mui/icons-material/Favorite"; // 찜 아이콘 추가
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
 export const TopNavigationBar = ({ cart, isAuthenticated, logout, isAdmin }) => {
   const navigate = useNavigate();
@@ -77,7 +75,7 @@ export const TopNavigationBar = ({ cart, isAuthenticated, logout, isAdmin }) => 
               <Link to="/admin">
                 <div className={styles.mypage}>
                   <img src="/images/icon-user.svg" alt="user" />
-                  <span>관리자 페이지</span>
+                  <span>관리자</span>
                 </div>
               </Link>
               <button onClick={handleLogout} className={styles.logoutButton}>

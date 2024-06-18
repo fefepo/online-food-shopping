@@ -13,7 +13,6 @@ const OrderHistory = () => {
     const fetchOrders = async () => {
       if (user) {
         const ordersData = await getOrders(user.uid);
-        // 날짜 기준으로 내림차순 정렬 (최근 주문이 위로 오도록)
         const sortedOrders = ordersData.sort(
           (a, b) => new Date(b.orderDate) - new Date(a.orderDate)
         );
@@ -28,7 +27,6 @@ const OrderHistory = () => {
     setSelectedDate(e.target.value);
   };
 
-  // 선택한 날짜에 따라 주문을 필터링
   const filteredOrders = selectedDate
     ? orders.filter((order) =>
         new Date(order.orderDate).toLocaleDateString() ===

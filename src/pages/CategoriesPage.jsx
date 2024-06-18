@@ -1,4 +1,3 @@
-// src/pages/CategoriesPage.jsx
 import React, { useState, useEffect } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebase";
@@ -10,7 +9,6 @@ export const CategoriesPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [products, setProducts] = useState([]);
 
-  // Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -26,7 +24,6 @@ export const CategoriesPage = () => {
     fetchCategories();
   }, []);
 
-  // Fetch products by selected category
   useEffect(() => {
     const fetchProducts = async () => {
       if (!selectedCategory) return;

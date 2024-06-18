@@ -33,14 +33,12 @@ export const SearchPage = ({ convertPrice }) => {
         const productsCollection = collection(db, 'products');
         const ingredientsCollection = collection(db, 'ingredients');
 
-        // 검색어에 해당하는 제품 필터링
         const productSnapshot = await getDocs(productsCollection);
         const productList = productSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         const filteredProducts = productList.filter(product =>
           product.name.includes(searchTerm)
         );
 
-        // 음식에 해당하는 재료 가져오기
         const ingredientQuery = query(ingredientsCollection, where("__name__", "==", searchTerm));
         const ingredientSnapshot = await getDocs(ingredientQuery);
 
@@ -53,7 +51,6 @@ export const SearchPage = ({ convertPrice }) => {
         console.log("Ingredients List: ", ingredientList);
         setIngredientList(ingredientList);
 
-        // 재료 이름을 포함하는 제품 검색
         let ingredientProducts = [];
         if (ingredientList.length > 0) {
           ingredientProducts = productList.filter(product =>
@@ -63,17 +60,15 @@ export const SearchPage = ({ convertPrice }) => {
 
         console.log("Ingredient Products: ", ingredientProducts);
 
-        // 제품과 재료 제품 합치기
         const combinedResults = [...filteredProducts, ...ingredientProducts];
 
-        // 중복 제거
         const uniqueResults = combinedResults.filter((result, index, self) =>
           index === self.findIndex((r) => r.id === result.id)
         );
 
         console.log("Combined Results: ", uniqueResults);
         setSearchResults(uniqueResults);
-        setSortedResults(uniqueResults); // 초기 정렬 설정
+        setSortedResults(uniqueResults); 
       } catch (error) {
         console.error("Error fetching products and ingredients: ", error);
       }

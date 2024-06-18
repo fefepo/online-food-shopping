@@ -58,16 +58,12 @@ const MyPage = ({ isAuthenticated, setIsAuthenticated }) => {
       try {
         const user = auth.currentUser;
         if (user) {
-          // Firestore에서 사용자 데이터 삭제
           await deleteDoc(doc(db, "users", user.uid));
 
-          // Authentication에서 사용자 계정 삭제
           await deleteAccount();
 
-          // 사용자 로그아웃 처리
           await auth.signOut();
 
-          // 로그아웃 상태로 업데이트
           setIsAuthenticated(false);
 
           alert("회원 탈퇴가 완료되었습니다.");

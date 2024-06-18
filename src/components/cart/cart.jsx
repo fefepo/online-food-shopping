@@ -85,10 +85,10 @@ export const Cart = ({ cart, setCart, convertPrice }) => {
       // Bootpay 결제 요청
       if (window.Bootpay) {
         window.Bootpay.requestPayment({
-          application_id: '666f89302ec2db891542ecae',  // Bootpay JS 키를 여기에 입력하세요
+          application_id: '666f89302ec2db891542ecae',  
           price: total,
           order_name: 'Cart Order',
-          order_id: new Date().getTime().toString(), // 임의의 고유 주문 ID
+          order_id: new Date().getTime().toString(), 
           pg: '카카오페이',
           method: '카카오페이',
           user: {

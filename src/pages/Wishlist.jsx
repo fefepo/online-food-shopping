@@ -67,7 +67,6 @@ const Wishlist = ({ convertPrice, cart, setCart }) => {
           const userRef = doc(db, "users", querySnapshot.docs[0].id);
           const userData = querySnapshot.docs[0].data();
 
-          // Ensure wishlistSets is an array before pushing the new set
           const updatedWishlistSets = [...(userData.wishlistSets || []), newSet];
 
           await setDoc(userRef, { wishlistSets: updatedWishlistSets }, { merge: true });
@@ -94,22 +93,19 @@ const Wishlist = ({ convertPrice, cart, setCart }) => {
           const userRef = doc(db, "users", querySnapshot.docs[0].id);
           const userData = querySnapshot.docs[0].data();
 
-          // Check if the item already exists in the set
           let itemExists = false;
           const updatedWishlistSets = (userData.wishlistSets || []).map(set => {
             if (set.name === setName) {
-              // Check if the item is already in the set
               if (!set.items.some(existingItem => existingItem.id === item.id)) {
                 set.items.push(item);
                 itemExists = true;
               } else {
-                itemExists = false; // item already exists
+                itemExists = false; 
               }
             }
             return set;
           });
 
-          // If the item was added successfully, update Firestore and state
           if (itemExists) {
             await setDoc(userRef, { wishlistSets: updatedWishlistSets }, { merge: true });
             setWishlistSets(updatedWishlistSets);
@@ -158,13 +154,12 @@ const Wishlist = ({ convertPrice, cart, setCart }) => {
   const handleAddSetToCart = (items) => {
     console.log("추가할 세트의 아이템들:", items);
 
-    // cart 상태가 배열이 아닌 경우, 기본적으로 빈 배열로 설정
     const updatedCart = Array.isArray(cart) ? [...cart] : [];
 
     items.forEach((item) => {
       const foundItem = updatedCart.find(cartItem => cartItem.id === item.id);
       if (foundItem) {
-        foundItem.quantity += 1; // 수량 업데이트
+        foundItem.quantity += 1; 
         console.log(`${item.name}의 수량이 업데이트되었습니다. 새로운 수량:`, foundItem.quantity);
       } else {
         updatedCart.push({ ...item, quantity: 1 });

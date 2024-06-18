@@ -33,7 +33,7 @@ const AdminPage = () => {
     try {
       const newProductWithTimestamp = {
         ...newProduct,
-        createdAt: serverTimestamp() // createdAt 필드를 추가
+        createdAt: serverTimestamp()
       };
       const docRef = await addDoc(collection(db, 'products'), newProductWithTimestamp);
       setProducts([...products, { id: docRef.id, ...newProductWithTimestamp }]);
